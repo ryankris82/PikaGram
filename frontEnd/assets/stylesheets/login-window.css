@@ -66,3 +66,30 @@ input:not(:focus):valid ~ .floating-label{
   top: 18px;
   transition: 0.2s ease all;
 }
+
+.loginBox__button{
+  /* height: 30px; */
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  border-radius: 2px;
+  /* width: 130px; */
+  box-sizing: border-box;
+  border: 1px solid rgb(163, 208, 238);
+  background-color: rgb(163, 208, 238);
+  padding: 10px 30px;
+  margin: 0 4px;
+
+}
+.loginBox__getAppButtons{
+  display: flex;
+  flex-direction: row;
+}
+.loginBox__appStore {
+  width:135px;
+  height:auto;
+}
+.loginBox__googlePlay {
+  width:135px;
+  height:auto;
+}

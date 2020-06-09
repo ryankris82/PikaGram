@@ -9,9 +9,11 @@ html(lang="en")
   body
     div.mainBox
       div.phoneBox
-        img.phoneBox(src='/staticImages/1.png')
+        div
+          img.phoneBox(src='/staticImages/1.png')
+          div.phoneBox.slideShow
         //- img.test(src="https://picsum.photos/400/400?random=11")
-      
+      div.mainLoginBox
       div.loginBox.loginBox__logo
         img(src='/staticImages/123.png')
 
@@ -27,20 +29,24 @@ html(lang="en")
         //- div Password
 
       div.loginBox.loginBox__login_buttons
-        button Login
-        button Demo User
+        button.loginBox.loginBox__button.button--disabled Log In
+        button.loginBox.loginBox__button.button--disabled: span Demo User
       div.loginBox.loginBox__or ───────── OR ─────────
       div.loginBox.loginBox__fbook  
         img(src='/staticImages/123.png')
         p Log in with Facebook
-      div.loginBox.loginBox__signUp sign up
+      div.loginBox.loginBox__signUp
+        span Don't have an account? 
+          a(href="") sign up
       div.loginBox.loginBox__forgotPassword
         a(href='') forgot password?
         
       div.loginBox.loginBox__getApp
-        a(href='') Get App
+        p Get the app.
       div.loginBox.loginBox__getAppButtons
-        a(href='') Get App Buttons
+        a(href="https://itunes.apple.com/app/instagram/id389801252?pt=428156&ct=igweb.loginPage.badge&mt=8&vt=lo"): img.loginBox.loginBox__appStore(src='/staticImages/appStore.png') 
+        a(href="https://play.google.com/store/apps/details?id=com.instagram.android&referrer=utm_source%3Dinstagramweb%26utm_campaign%3DloginPage%26ig_mid%3D6535D6D9-46B8-426F-9CB4-0C0AA43E7C80%26utm_content%3Dlo%26utm_medium%3Dbadge"): img.loginBox.loginBox__googlePlay(src='/staticImages/playStore.png') 
+        //- img(src='/staticImages/123.png') 
 
     div.navBox
       ul.navBox.navBox__links
