@@ -1,0 +1,9 @@
+.navBox > ul{
+  display: flex;
+  justify-content: center;
+  
+}
+
+.navBox li {
+margin:10px;
+}

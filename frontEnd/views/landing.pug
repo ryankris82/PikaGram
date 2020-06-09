@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    link(rel="stylesheet", href='/staticCSS/main.css')
+    link(rel="icon" href='/staticIcons/pikachu.svg')
+    title Document
+  body
+    div.mainBox
+      div.phoneBox
+        img.phoneBox(src='/staticImages/1.png')
+        //- img.test(src="https://picsum.photos/400/400?random=11")
+      
+      div.loginBox.loginBox__logo
+        img(src='/staticImages/123.png')
+
+      div.loginBox.loginBox__username
+        //- label(for="username" placeholder="phone/username/email")
+        input(type="text" name="username" class="inputText") 
+        span.floating-label Your email address
+        //- div Phone, Username or Email
+      div.loginBox.loginBox__password
+        //- label(for="password") 
+        input(type="password" name="password" class="inputText")
+        span.floating-label Your email address
+        //- div Password
+
+      div.loginBox.loginBox__login_buttons
+        button Login
+        button Demo User
+      div.loginBox.loginBox__or ───────── OR ─────────
+      div.loginBox.loginBox__fbook  
+        img(src='/staticImages/123.png')
+        p Log in with Facebook
+      div.loginBox.loginBox__signUp sign up
+      div.loginBox.loginBox__forgotPassword
+        a(href='') forgot password?
+        
+      div.loginBox.loginBox__getApp
+        a(href='') Get App
+      div.loginBox.loginBox__getAppButtons
+        a(href='') Get App Buttons
+
+    div.navBox
+      ul.navBox.navBox__links
+        li: a(href='') link to team
+        li: a(href='') tech stack
