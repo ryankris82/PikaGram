@@ -1,3 +1,5 @@
+@font-face { font-family: "My Custom Font"; src: url("/staticFonts/Billabong.ttf") format("truetype");}
+
 .loginBox{
   display: flex;
   flex-direction: column;
@@ -6,6 +8,15 @@
   /* width: 350px;
   height: 380px; */
   /* border: 1px solid black; */
+}
+
+.loginBox.loginBox__logo  p {
+  letter-spacing: 1px;
+  font-family: "My Custom Font";
+  color:rgba(7, 7, 7, .75);
+  text-shadow: 0 0 2px rgba(100, 100, 100, 5);
+  font-size: 48px;
+  font-weight: 500;
 }
 
 .loginBox__login_buttons{

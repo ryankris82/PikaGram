@@ -2,32 +2,25 @@
 @import url("./phone-box.css");
 @import url("./login-window.css");
 @import url("./navbar.css");
-@font-face {
-  font-family: "My Custom Font";
-  src: url("/staticFonts/Billabong.ttf") format("truetype");
-}
 
-body{
-
-  font-family: "My Custom Font";
-}
 
 .mainBox {
   padding:20px;
   display: grid;
-  grid-template-columns:  9fr 7fr;
-  grid-template-rows:  50fr 38fr 38fr 30fr 15fr 20fr 14fr 18fr 18fr 44fr;
-  grid-template-areas:  
-  "phone logo"
-  "phone username"
-  "phone password" 
-  "phone login" 
-  "phone or" 
-  "phone fbook" 
-  "phone forgotpassword" 
-  "phone signup" 
-  "phone getapp" 
-  "phone getAppButtons";
+  grid-template-columns: 36px  9fr 7fr;
+  grid-template-rows:  10px 50fr 38fr 38fr 30fr 15fr 20fr 14fr 18fr 18fr 44fr;
+  grid-template-areas: 
+  ". . ." 
+  ". phone logo"
+  ". phone username"
+  ". phone password" 
+  ". phone login" 
+  ". phone or" 
+  ". phone fbook" 
+  ". phone forgotpassword" 
+  ". phone signup" 
+  ". phone getapp" 
+  ". phone getAppButtons";
 }
 
 .phoneBox {

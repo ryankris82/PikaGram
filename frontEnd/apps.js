@@ -37,4 +37,4 @@ app.get("/", eh(async (req, res) => {
 //   res.send('An error occurred!');
 // });
 
-app.listen(8877)
+app.listen(8877, ()=> console.log(`Listening on port 8877`))
