@@ -4,11 +4,24 @@ const db = require('../db/models');
 
 const router = express.Router();
 
+const postNotFound = (id) => {
+  const err = Error('Post not found');
+  err.errors = [`Post with id of ${id} could no be found`];
+  err.title = 'Post no found';
+  err.status = 404;
+  return err;
+}
+
 //get a post
-router.get('/posts/:postId(\\d+)', asyncHandler(async (req, res) => {
+router.get('/posts/:postId(\\d+)', asyncHandler(async (req, res, next) => {
   const postId = req.params.postId;
   const post = await db.Post.findByPk(postId);
-  res.json({ post });
+
+  if (post) {
+    res.json({ post });
+  } else {
+    next(postNotFound(postId));
+  }
 }));
 
 //create a post
@@ -28,13 +41,41 @@ router.post('/posts', asyncHandler(async (req, res) => {
   res.json({ post });
 }));
 
-router.put('/posts/postId(\\d+)', (req, res) => {
-  //TODO
-});
+router.put('/posts/:postId(\\d+)', asyncHandler(async (req, res, next) => {
+  const postId = req.params.postId
+  const post = await db.Post.findByPk(postId);
+  // if (req.user.id !== post.userId) { //Checks if user is signed in and can edit their own tweet
+  //   const err = new Error('Unauthorized');
+  //   err.status = 401;
+  //   err.message = 'You are not authorized to edit this post.';
+  //   err.title = 'Unauthorized';
+  //   throw err
+  // }
+  if (post) {
+    await post.update({ caption: req.body.caption })
+    res.json({ post })
+  } else {
+    next(postNotFound(postId));
+  }
+}));
 
-router.delete('/posts/postId(\\d+)', (req, res) => {
-  //TODO
-});
+router.delete('/posts/:postId(\\d+)', asyncHandler(async (req, res) => {
+  const postId = req.params.postId
+  const post = await db.Post.findByPk(postId);
+  // if (req.user.id !== post.userId) { //Checks if user is signed in and can edit their own tweet
+  //   const err = new Error('Unauthorized');
+  //   err.status = 401;
+  //   err.message = 'You are not authorized to delete this post.';
+  //   err.title = 'Unauthorized';
+  //   throw err
+  // }
+  if (post) {
+    await post.destroy();
+    res.json({ post })
+  } else {
+    next(postNotFound(postId));
+  }
+}));
 
 router.get('/posts/user/:userId(\\d+)', (req, res) => {
   //TODO
