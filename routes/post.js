@@ -1,14 +1,40 @@
 
 const express = require('express');
-const { asyncHandler } = require('../utils');
+const { check } = require('express-validator');
+const { asyncHandler, handleValidationErrors } = require('../utils');
 const db = require('../db/models');
+const { requireAuth } = require('../auth');
 
 const router = express.Router();
 
 const postNotFound = (id) => {
   const err = Error('Post not found');
-  err.errors = [`Post with id of ${id} could no be found`];
-  err.title = 'Post no found';
+  err.errors = [`Post with id of ${id} could not be found`];
+  err.title = 'Post not found';
+  err.status = 404;
+  return err;
+}
+
+const userNotFound = (id) => {
+  const err = Error('User not found');
+  err.errors = [`User with id of ${id} could not be found`];
+  err.title = 'User not found';
+  err.status = 404;
+  return err;
+}
+
+const commentNotFound = (id) => {
+  const err = Error('Comment not found');
+  err.errors = [`Comment with id of ${id} could not be found`];
+  err.title = 'Comment not found';
+  err.status = 404;
+  return err;
+}
+
+const likeNotFound = (id) => {
+  const err = Error('Like not found');
+  err.errors = [`Like with id of ${id} could not be found`];
+  err.title = 'Like not found';
   err.status = 404;
   return err;
 }
@@ -26,7 +52,11 @@ router.get('/posts/:postId(\\d+)', asyncHandler(async (req, res, next) => {
 }));
 
 //create a post
-router.post('/posts', asyncHandler(async (req, res) => {
+router.post('/posts', handleValidationErrors, [
+  check('photoPath')
+    .exists({ checkFalsey: true })
+    .withMessage('Please provide a picture')
+], requireAuth, asyncHandler(async (req, res) => {
   const {
     caption,
     photoPath
@@ -34,7 +64,7 @@ router.post('/posts', asyncHandler(async (req, res) => {
   console.log(req.body);
 
   const post = await db.Post.create({
-    userId: 1, // replace with req.user.id so it's based on who is logged in
+    userId: req.user.id, // replace with req.user.id so it's based on who is logged in
     caption,
     photoPath
   });
@@ -42,16 +72,17 @@ router.post('/posts', asyncHandler(async (req, res) => {
   res.json({ post });
 }));
 
-router.put('/posts/:postId(\\d+)', asyncHandler(async (req, res, next) => {
+//edit a post
+router.put('/posts/:postId(\\d+)', requireAuth, asyncHandler(async (req, res, next) => {
   const postId = req.params.postId
   const post = await db.Post.findByPk(postId);
-  // if (req.user.id !== post.userId) { //Checks if user is signed in and can edit their own tweet
-  //   const err = new Error('Unauthorized');
-  //   err.status = 401;
-  //   err.message = 'You are not authorized to edit this post.';
-  //   err.title = 'Unauthorized';
-  //   throw err
-  // }
+  if (req.user.id !== post.userId) { //Checks if user is signed in and can edit their own tweet
+    const err = new Error('Unauthorized');
+    err.status = 401;
+    err.message = 'You are not authorized to edit this post.';
+    err.title = 'Unauthorized';
+    throw err
+  }
   if (post) {
     await post.update({ caption: req.body.caption })
     res.json({ post })
@@ -60,16 +91,17 @@ router.put('/posts/:postId(\\d+)', asyncHandler(async (req, res, next) => {
   }
 }));
 
-router.delete('/posts/:postId(\\d+)', asyncHandler(async (req, res) => {
+//deletes a post
+router.delete('/posts/:postId(\\d+)', requireAuth, asyncHandler(async (req, res, next) => {
   const postId = req.params.postId
   const post = await db.Post.findByPk(postId);
-  // if (req.user.id !== post.userId) { //Checks if user is signed in and can edit their own tweet
-  //   const err = new Error('Unauthorized');
-  //   err.status = 401;
-  //   err.message = 'You are not authorized to delete this post.';
-  //   err.title = 'Unauthorized';
-  //   throw err
-  // }
+  if (req.user.id !== post.userId) { //Checks if user is signed in and can edit their own tweet
+    const err = new Error('Unauthorized');
+    err.status = 401;
+    err.message = 'You are not authorized to delete this post.';
+    err.title = 'Unauthorized';
+    throw err
+  }
   if (post) {
     await post.destroy();
     res.json({ post })
@@ -78,34 +110,154 @@ router.delete('/posts/:postId(\\d+)', asyncHandler(async (req, res) => {
   }
 }));
 
-
-router.get('/posts/following/:userId(\\d+)', asyncHandler(async (req, res) => {
-  // const userId = req.params.userId
-  // console.log('this is the user id', userId)
-  // const posts = await db.Post.findAll({ where: { followerId: userId } });
-  // // , order: [['createdBy', 'DESC']] }
-  // console.log(posts);
-  // res.json({ posts });
+//all a user's posts
+router.get('/posts/user/:userId(\\d+)', asyncHandler(async (req, res, next) => {
+  const userId = req.params.userId;
+  const user = await db.User.findByPk(userId);
+  if (user) {
+    const userPosts = await db.User.findByPk(userId, {
+      attributes: ['id', 'userName'],
+      include: {
+        model: db.Post,
+        as: 'posts',
+        include: [
+          {
+            model: db.Comment,
+          }, {
+            model: db.Like,
+          }
+        ],
+      }
+    })
+    res.json({ userPosts });
+  } else {
+    next(userNotFound(userId));
+  }
 }));
 
-// router.get('/posts/following/:userId(\\d+)', (req, res) => {
-//   //TODO
-// });
+//get all posts the people user follows
+router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (req, res, next) => {
+  const userId = req.params.userId;
+  const user = await db.User.findByPk(userId);
+  if (req.user.id !== user.id) { //Checks if user is signed in and can edit their own tweet
+    const err = new Error('Unauthorized');
+    err.status = 401;
+    err.message = 'You are not authorized to delete this post.';
+    err.title = 'Unauthorized';
+    throw err
+  }
+  if (user) {
+    const followerPosts = await db.User.findByPk(userId, {
+      attributes: ['id', 'userName'],
+      include: {
+        model: db.User,
+        as: 'following',
+        attributes: ['id', 'userName'],
+        through: { attributes: [] },
+        include: {
+          model: db.Post,
+          as: 'posts',
+          include: [
+            {
+              model: db.Comment,
+            }, {
+              model: db.Like,
+            }
+          ],
+        }
+      }
+    })
+    res.json({ followerPosts });
+  } else {
+    next(userNotFound(userId));
+  }
+}));
 
-// router.post('/posts/:postId(\\d+)/comments', (req, res) => {
-//   //TODO
-// });
+//Add a comment on a post
+router.post('/posts/:postId(\\d+)/comments', requireAuth, asyncHandler(async (req, res, next) => {
+  const postId = req.params.postId;
+  const post = await db.Post.findByPk(postId);
+  if (post) {
+    const {
+      comment
+    } = req.body
+    const postComment = await db.Comment.create({
+      userId: req.user.id,
+      postId,
+      comment
+    });
+    res.json({ postComment });
+  } else {
+    next(postNotFound(postId));
+  }
+}));
 
-// router.delete('/posts/:postId(\\d+)/comments/:commentId(\\d+)', (req, res) => {
-//   //TODO
-// });
+//delete a comment
+router.delete('/posts/:postId(\\d+)/comments/:commentId(\\d+)', requireAuth, asyncHandler(async (req, res, next) => {
+  const commentId = req.params.commentId;
+  const comment = await db.Comment.findByPk(commentId);
+  if (comment) {
+    if (req.user.id !== comment.userId && req.user.id !== comment.postId) { //Checks if user is signed in and can edit their own tweet
+      const err = new Error('Unauthorized');
+      err.status = 401;
+      err.message = 'You are not authorized to delete this post.';
+      err.title = 'Unauthorized';
+      throw err
+    }
+    comment.destroy();
+    res.json({ comment });
+  } else {
+    next(commentNotFound(commentId))
+  }
+}));
 
-// router.post('/posts/:postId(\\d+)/likes', (req, res) => {
-//   //TODO
-// });
+router.post('/posts/:postId(\\d+)/likes', requireAuth, asyncHandler(async (req, res) => {
+  const postId = req.params.postId;
+  const post = await db.Post.findByPk(postId);
+  if (req.user.id !== user.id) { //Checks if user is signed in and can edit their own tweet
+    const err = new Error('Unauthorized');
+    err.status = 401;
+    err.message = 'You are not authorized to delete this post.';
+    err.title = 'Unauthorized';
+    throw err
+  }
+  if (post) {
+    const existingLike = await db.Like.findOne({
+      where: {
+        userId: req.user.id,
+        postId
+      }
+    });
+    if (existingLike) {
+      res.json({ existingLike });
+    } else {
+      const like = await db.Like.create({
+        userId: req.user.id,
+        postId,
+      });
+      res.json({ like });
+    }
+  } else {
+    next(postNotFound(postId));
+  }
+}));
 
-// router.delete('/posts/:postId(\\d+)/likes/:likeId(\\d+)', (req, res) => {
-//   //TODO
-// });
+router.delete('/posts/:postId(\\d+)/likes/:likeId(\\d+)', requireAuth, asyncHandler(async (req, res, next) => {
+  const likeId = req.params.likeId;
+  const like = await db.Like.findByPk(likeId);
+  if (like) {
+    if (req.user.id !== like.userId) { //Checks if user is signed in and can edit their own tweet
+      const err = new Error('Unauthorized');
+      err.status = 401;
+      err.message = 'You are not authorized to delete this post.';
+      err.title = 'Unauthorized';
+      throw err;
+    }
+    like.destroy();
+    res.json({ like });
+  } else {
+    next(likeNotFound(likeId))
+  }
+}));
 
 module.exports = router;
