@@ -2,6 +2,7 @@
 const express = require('express');
 const { asyncHandler } = require('../utils');
 const db = require('../db/models');
+const { requireAuth } = require('../auth');
 
 const router = express.Router();
 
@@ -26,7 +27,7 @@ router.get('/posts/:postId(\\d+)', asyncHandler(async (req, res, next) => {
 }));
 
 //create a post
-router.post('/posts', asyncHandler(async (req, res) => {
+router.post('/posts', requireAuth, asyncHandler(async (req, res) => {
   const {
     caption,
     photoPath
@@ -42,16 +43,16 @@ router.post('/posts', asyncHandler(async (req, res) => {
   res.json({ post });
 }));
 
-router.put('/posts/:postId(\\d+)', asyncHandler(async (req, res, next) => {
+router.put('/posts/:postId(\\d+)', requireAuth, asyncHandler(async (req, res, next) => {
   const postId = req.params.postId
   const post = await db.Post.findByPk(postId);
-  // if (req.user.id !== post.userId) { //Checks if user is signed in and can edit their own tweet
-  //   const err = new Error('Unauthorized');
-  //   err.status = 401;
-  //   err.message = 'You are not authorized to edit this post.';
-  //   err.title = 'Unauthorized';
-  //   throw err
-  // }
+  if (req.user.id !== post.userId) { //Checks if user is signed in and can edit their own tweet
+    const err = new Error('Unauthorized');
+    err.status = 401;
+    err.message = 'You are not authorized to edit this post.';
+    err.title = 'Unauthorized';
+    throw err
+  }
   if (post) {
     await post.update({ caption: req.body.caption })
     res.json({ post })
@@ -60,16 +61,16 @@ router.put('/posts/:postId(\\d+)', asyncHandler(async (req, res, next) => {
   }
 }));
 
-router.delete('/posts/:postId(\\d+)', asyncHandler(async (req, res) => {
+router.delete('/posts/:postId(\\d+)', requireAuth, asyncHandler(async (req, res) => {
   const postId = req.params.postId
   const post = await db.Post.findByPk(postId);
-  // if (req.user.id !== post.userId) { //Checks if user is signed in and can edit their own tweet
-  //   const err = new Error('Unauthorized');
-  //   err.status = 401;
-  //   err.message = 'You are not authorized to delete this post.';
-  //   err.title = 'Unauthorized';
-  //   throw err
-  // }
+  if (req.user.id !== post.userId) { //Checks if user is signed in and can edit their own tweet
+    const err = new Error('Unauthorized');
+    err.status = 401;
+    err.message = 'You are not authorized to delete this post.';
+    err.title = 'Unauthorized';
+    throw err
+  }
   if (post) {
     await post.destroy();
     res.json({ post })
