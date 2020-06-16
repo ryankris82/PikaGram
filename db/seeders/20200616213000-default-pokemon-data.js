@@ -4,7 +4,18 @@ const faker = require('faker');
 const bcrypt = require('bcryptjs');
 const pokedex = new Pokedex();
 
-const array = ['Bulbasaur', 'Squirtle', 'Charmander'];
+const array = [
+  "pikachu", "eevee", "snorlax",
+  "mewtwo", "charizard", "celebi",
+  "lucario", "mew", "charmander",
+  "squirtle", "bulbasaur", "jigglypuff",
+  "raichu", "psyduck", "blastoise",
+  "dragonite", "arcanine", "slowpoke",
+  "togepi", "vulpix", "jynx",
+  "meowth", "glaceon", "lugia",
+  "ho-oh", "magikarp", "sylveon",
+  "ditto", "gengar", "suicune"
+];
 
 function getPokemon(name) {
   const pokemon = pokedex.pokemon(name)
@@ -22,7 +33,7 @@ module.exports = {
     const data = array.map((pokemonName) => {
       const { name, sprites, } = getPokemon(pokemonName)
       return {
-        firstName: name,
+        firstName: name.charAt(0).toUpperCase() + name.slice(1),
         lastName: 'Pokemon',
         userName: faker.internet.userName(),
         email: faker.internet.email(),
