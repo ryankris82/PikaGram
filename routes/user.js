@@ -9,10 +9,6 @@ const db = require("../db/models");
 
 const { User } = db;
 
-const isLoggedIn = function () {
-  //todo: create middleware function to see if user is logged in
-
-}
 
 const validateEmailAndPassword = [
   check("email")
@@ -112,7 +108,6 @@ router.get(
 router.put(
   "/:id(\\d+)",
   requireAuth,
-  ///validateEmailAndPassword,///
   asyncHandler(async (req, res, next) => {
     const user = await User.findByPk(req.params.id);
 
@@ -144,6 +139,7 @@ router.put(
 
 router.delete(
   "/:id(\\d+)",
+  requireAuth,
   asyncHandler(async (req, res, next) => {
     const user = await User.findByPk(req.params.id);
 
