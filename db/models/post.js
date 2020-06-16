@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       photoPath: {
         type: DataTypes.STRING,
         allowNull: false
-      } 
+      }
     },
     {}
   );
@@ -23,7 +23,9 @@ module.exports = (sequelize, DataTypes) => {
     Post.belongsTo(models.User, {
       as: "user",
       foreignKey: "userId",
-    })
+    });
+    Post.hasMany(models.Comment, { foreignKey: 'postId' })
+    Post.hasMany(models.Like, { foreignKey: 'postId' })
   };
   return Post;
 };
