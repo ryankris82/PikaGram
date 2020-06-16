@@ -1,3 +1,4 @@
+
 const express = require('express');
 const { asyncHandler } = require('../utils');
 const db = require('../db/models');
@@ -77,9 +78,6 @@ router.delete('/posts/:postId(\\d+)', asyncHandler(async (req, res) => {
   }
 }));
 
-router.get('/posts/user/:userId(\\d+)', (req, res) => {
-  //TODO
-});
 
 router.get('/posts/following/:userId(\\d+)', asyncHandler(async (req, res) => {
   // const userId = req.params.userId
@@ -90,22 +88,24 @@ router.get('/posts/following/:userId(\\d+)', asyncHandler(async (req, res) => {
   // res.json({ posts });
 }));
 
-router.post('/posts/:postId(\\d+)/comments', (req, res) => {
-  //TODO
-});
+// router.get('/posts/following/:userId(\\d+)', (req, res) => {
+//   //TODO
+// });
 
-router.delete('/posts/:postId(\\d+)/comments/:commentId(\\d+)', (req, res) => {
-  //TODO
-});
+// router.post('/posts/:postId(\\d+)/comments', (req, res) => {
+//   //TODO
+// });
 
-router.post('/posts/:postId(\\d+)/likes', (req, res) => {
-  //TODO
-});
+// router.delete('/posts/:postId(\\d+)/comments/:commentId(\\d+)', (req, res) => {
+//   //TODO
+// });
 
-router.delete('/posts/:postId(\\d+)/likes/:likeId(\\d+)', (req, res) => {
-  //TODO
-});
+// router.post('/posts/:postId(\\d+)/likes', (req, res) => {
+//   //TODO
+// });
 
-
+// router.delete('/posts/:postId(\\d+)/likes/:likeId(\\d+)', (req, res) => {
+//   //TODO
+// });
 
 module.exports = router;

@@ -11,7 +11,7 @@ const app = express();
 app.use(morgan("dev"));
 app.use(express.json());
 app.use("/", indexRouter);
-app.use("/api", userRouter);
+app.use("/api/users", userRouter);
 app.use("/api", postRouter);
 app.use(cors({ origin: "http://localhost:8080" }));
 
