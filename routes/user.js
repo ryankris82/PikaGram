@@ -208,6 +208,14 @@ router.post(
   "/:id(\\d+)/following/",
   requireAuth,
   asyncHandler(async (req, res) => {
+    if (req.body.user.id != req.params.id) {
+      //KDEV change to req.user.id
+      const err = new Error("Unauthorized");
+      err.status = 401;
+      err.message = "You are not authorized to follow this user.";
+      err.title = "Unauthorized";
+      throw err;
+    }
     const follow = await db.Follow.create({
       followerId: req.params.id,
       followingId: req.body.id,
@@ -220,6 +228,14 @@ router.delete(
   "/:id(\\d+)/following/:followingId(\\d+)",
   requireAuth,
   asyncHandler(async (req, res) => {
+    if (req.body.user.id != req.params.id) {
+      //KDEV change to req.user.id
+      const err = new Error("Unauthorized");
+      err.status = 401;
+      err.message = "You are not authorized to unfollow this user.";
+      err.title = "Unauthorized";
+      throw err;
+    }
     const follow = await db.Follow.findOne({
       where: {
         followingId: req.params.followingId,
