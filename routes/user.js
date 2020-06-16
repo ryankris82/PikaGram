@@ -6,9 +6,9 @@ const { getUserToken, requireAuth } = require("../auth");
 
 const router = express.Router();
 const db = require("../db/models");
+const follow = require("../db/models/follow");
 
 const { User } = db;
-
 
 const validateEmailAndPassword = [
   check("email")
@@ -28,7 +28,17 @@ router.post(
     .withMessage("Please provide a username"),
   validateEmailAndPassword,
   asyncHandler(async (req, res) => {
-    const { firstName, lastName, userName, email, password, bio, profilePicPath, age, gender } = req.body;
+    const {
+      firstName,
+      lastName,
+      userName,
+      email,
+      password,
+      bio,
+      profilePicPath,
+      age,
+      gender,
+    } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({
       firstName,
@@ -160,17 +170,49 @@ router.delete(
   })
 );
 
-router.get("/:id(\\d+)/followers", (req, res) => {
-  //TODO
-});
+router.get(
+  "/:id(\\d+)/followers",
+  asyncHandler(async (req, res) => {
+    const user = await User.findByPk(req.params.id, {
+      include: {
+        model: db.User,
+        as: "followers",
+        attributes: ["id", "userName"],
+        through: {
+          attributes: [],
+        },
+      },
+    });
+    res.json({ user });
+  })
+);
 
-router.get("/:id(\\d+)/following", (req, res) => {
-  //TODO
-});
+router.get(
+  "/:id(\\d+)/following",
+  asyncHandler(async (req, res) => {
+    const user = await User.findByPk(req.params.id, {
+      include: {
+        model: db.User,
+        as: "following",
+        attributes: ["id", "userName"],
+        through: {
+          attributes: [],
+        },
+      },
+    });
+    res.json({ user });
+  })
+);
 
-router.post("/:id(\\d+)/following/:followingId(\\d+)", (req, res) => {
-  //TODO
-});
+router.post(
+  "/:id(\\d+)/following/",
+  asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+    const following = await Follow.create({
+      
+    });
+  })
+);
 
 router.delete("/:id(\\d+)/following/:followingId(\\d+)", (req, res) => {
   //TODO
