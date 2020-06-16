@@ -9,6 +9,11 @@ const db = require("../db/models");
 
 const { User } = db;
 
+const isLoggedIn = function () {
+  //todo: create middleware function to see if user is logged in
+
+}
+
 const validateEmailAndPassword = [
   check("email")
     .exists({ checkFalsy: true })
@@ -27,9 +32,19 @@ router.post(
     .withMessage("Please provide a username"),
   validateEmailAndPassword,
   asyncHandler(async (req, res) => {
-    const { userName, email, password } = req.body;
+    const { firstName, lastName, userName, email, password, bio, profilePicPath, age, gender } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ userName, email, hashedPassword });
+    const user = await User.create({
+      firstName,
+      lastName,
+      userName,
+      email,
+      hashedPassword,
+      bio,
+      profilePicPath,
+      age,
+      gender,
+    });
 
     const token = getUserToken(user);
     res.status(201).json({
@@ -61,24 +76,93 @@ router.post(
     res.json({ token, user: { id: user.id } });
   })
 );
+
+const userNotFoundError = (id) => {
+  const err = Error("User not found");
+  err.errors = [`User with id of ${id} could not be found.`];
+  err.title = "User not found.";
+  err.status = 404;
+  return err;
+};
+
 //get list of all users
-// router.get("/user-all", requireAuth, asyncHandler(async(req, res) => {
-//   const users = await User.findAll({ userName });
-//   res.json({ users });
-// }));
+router.get(
+  "/all",
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const users = await User.findAll();
+    res.json({ users });
+  })
+);
 
-//get info for specific user 
-router.get("/:id(\\d+)", (req, res) => {
-  
-});
+//get info for specific user
+router.get(
+  "/:id(\\d+)",
+  requireAuth,
+  asyncHandler(async (req, res, next) => {
+    const user = await User.findByPk(req.params.id);
+    if (user) {
+      res.json({ user });
+    } else {
+      next(userNotFoundError(req.params.id));
+    }
+  })
+);
 
-router.put("/:id(\\d+)", (req, res) => {
-  //TODO
-});
+router.put(
+  "/:id(\\d+)",
+  requireAuth,
+  ///validateEmailAndPassword,///
+  asyncHandler(async (req, res, next) => {
+    const user = await User.findByPk(req.params.id);
 
-router.delete("/:id(\\d+)", (req, res) => {
-  //TODO
-});
+    if (user) {
+      if (req.body.user.id != user.id) {
+        //KDEV change req.body.user to req.user
+        const err = new Error("Unauthorized");
+        err.status = 401;
+        err.message = "You are not authorized to edit this user.";
+        err.title = "Unauthorized";
+        throw err;
+      }
+      await user.update({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        userName: req.body.userName,
+        email: req.body.email,
+        bio: req.body.bio,
+        profilePicPath: req.body.profilePicPath,
+        age: req.body.age,
+        gender: req.body.gender,
+      });
+      res.json({ user });
+    } else {
+      next(userNotFoundError(req.params.id));
+    }
+  })
+);
+
+router.delete(
+  "/:id(\\d+)",
+  asyncHandler(async (req, res, next) => {
+    const user = await User.findByPk(req.params.id);
+
+    if (user) {
+      if (req.body.user.id != user.id) {
+        //KDEV change to req.user.id
+        const err = new Error("Unauthorized");
+        err.status = 401;
+        err.message = "You are not authorized to delete this user.";
+        err.title = "Unauthorized";
+        throw err;
+      }
+      await user.destroy();
+      res.json({ message: `Deleted user with id of ${req.params.id}.` });
+    } else {
+      next(userNotFoundError(req.params.id));
+    }
+  })
+);
 
 router.get("/:id(\\d+)/followers", (req, res) => {
   //TODO
