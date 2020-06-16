@@ -214,13 +214,13 @@ router.delete('/posts/:postId(\\d+)/comments/:commentId(\\d+)', requireAuth, asy
 router.post('/posts/:postId(\\d+)/likes', requireAuth, asyncHandler(async (req, res) => {
   const postId = req.params.postId;
   const post = await db.Post.findByPk(postId);
-  if (req.user.id !== user.id) { //Checks if user is signed in and can edit their own tweet
-    const err = new Error('Unauthorized');
-    err.status = 401;
-    err.message = 'You are not authorized to delete this post.';
-    err.title = 'Unauthorized';
-    throw err
-  }
+  // if (req.user.id !== user.id) { //Checks if user is signed in and can edit their own tweet
+  //   const err = new Error('Unauthorized');
+  //   err.status = 401;
+  //   err.message = 'You are not authorized to delete this post.';
+  //   err.title = 'Unauthorized';
+  //   throw err
+  // }
   if (post) {
     const existingLike = await db.Like.findOne({
       where: {
