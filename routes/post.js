@@ -1,6 +1,7 @@
 
 const express = require('express');
-const { asyncHandler } = require('../utils');
+const { check } = require('express-validator');
+const { asyncHandler, handleValidationErrors } = require('../utils');
 const db = require('../db/models');
 const { requireAuth } = require('../auth');
 
@@ -27,7 +28,11 @@ router.get('/posts/:postId(\\d+)', asyncHandler(async (req, res, next) => {
 }));
 
 //create a post
-router.post('/posts', requireAuth, asyncHandler(async (req, res) => {
+router.post('/posts', handleValidationErrors, [
+  check('photoPath')
+    .exists({ checkFalsey: true })
+    .withMessage('Please provide a picture')
+], requireAuth, asyncHandler(async (req, res) => {
   const {
     caption,
     photoPath
@@ -35,7 +40,7 @@ router.post('/posts', requireAuth, asyncHandler(async (req, res) => {
   console.log(req.body);
 
   const post = await db.Post.create({
-    userId: 1, // replace with req.user.id so it's based on who is logged in
+    userId: req.user.id, // replace with req.user.id so it's based on who is logged in
     caption,
     photoPath
   });
@@ -80,13 +85,8 @@ router.delete('/posts/:postId(\\d+)', requireAuth, asyncHandler(async (req, res)
 }));
 
 
-router.get('/posts/following/:userId(\\d+)', asyncHandler(async (req, res) => {
-  // const userId = req.params.userId
-  // console.log('this is the user id', userId)
-  // const posts = await db.Post.findAll({ where: { followerId: userId } });
-  // // , order: [['createdBy', 'DESC']] }
-  // console.log(posts);
-  // res.json({ posts });
+router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.params.userId;
 }));
 
 // router.get('/posts/following/:userId(\\d+)', (req, res) => {
