@@ -206,16 +206,33 @@ router.get(
 
 router.post(
   "/:id(\\d+)/following/",
+  requireAuth,
   asyncHandler(async (req, res) => {
-    const { userId } = req.body;
-    const following = await Follow.create({
-      
+    const follow = await db.Follow.create({
+      followerId: req.params.id,
+      followingId: req.body.id,
     });
+    res.json({ follow });
   })
 );
 
-router.delete("/:id(\\d+)/following/:followingId(\\d+)", (req, res) => {
-  //TODO
-});
+router.delete(
+  "/:id(\\d+)/following/:followingId(\\d+)",
+  requireAuth,
+  asyncHandler(async (req, res) => {
+    const follow = await db.Follow.findOne({
+      where: {
+        followingId: req.params.followingId,
+        followerId: req.params.id,
+      },
+    });
+    if (follow) {
+      follow.destroy();
+      res.json({ following: req.params.followingId });
+    } else {
+      res.json({ err: ["You were not following this person."] });
+    }
+  })
+);
 
 module.exports = router;
