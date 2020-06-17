@@ -67,7 +67,7 @@ router.post(
     const { email, password } = req.body;
     const user = await User.findOne({
       where: {
-        email,
+        [Op.or]: [{ email: email }, { userName: email }]
       },
     });
 
