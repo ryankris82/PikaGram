@@ -122,7 +122,7 @@ router.put(
     const user = await User.findByPk(req.params.id);
 
     if (user) {
-      if (req.body.user.id != user.id) {
+      if (req.user.id != user.id) {
         //KDEV change req.body.user to req.user
         const err = new Error("Unauthorized");
         err.status = 401;
@@ -154,7 +154,7 @@ router.delete(
     const user = await User.findByPk(req.params.id);
 
     if (user) {
-      if (req.body.user.id != user.id) {
+      if (req.user.id != user.id) {
         //KDEV change to req.user.id
         const err = new Error("Unauthorized");
         err.status = 401;
@@ -208,7 +208,7 @@ router.post(
   "/:id(\\d+)/following/",
   requireAuth,
   asyncHandler(async (req, res) => {
-    if (req.body.user.id != req.params.id) {
+    if (req.user.id != req.params.id) {
       //KDEV change to req.user.id
       const err = new Error("Unauthorized");
       err.status = 401;
@@ -228,7 +228,7 @@ router.delete(
   "/:id(\\d+)/following/:followingId(\\d+)",
   requireAuth,
   asyncHandler(async (req, res) => {
-    if (req.body.user.id != req.params.id) {
+    if (req.user.id != req.params.id) {
       //KDEV change to req.user.id
       const err = new Error("Unauthorized");
       err.status = 401;
