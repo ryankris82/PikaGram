@@ -42,7 +42,26 @@ const likeNotFound = (id) => {
 //get a post
 router.get('/posts/:postId(\\d+)', asyncHandler(async (req, res, next) => {
   const postId = req.params.postId;
-  const post = await db.Post.findByPk(postId);
+  const post = await db.Post.findByPk(postId, {
+    include: [
+      {
+        model: db.Comment,
+        attributes: ['userId', 'comment', 'createdAt'],
+        order: [['createdAt', 'DESC']],
+        include: {
+          model: db.User,
+          attributes: ['userName']
+        }
+      }, {
+        model: db.Like,
+        attributes: ['userId'],
+        include: {
+          model: db.User,
+          attributes: ['userName']
+        }
+      }
+    ]
+  });
 
   if (post) {
     res.json({ post });
@@ -120,11 +139,23 @@ router.get('/posts/user/:userId(\\d+)', asyncHandler(async (req, res, next) => {
       include: {
         model: db.Post,
         as: 'posts',
+        order: [['createdAt', 'DESC']],
         include: [
           {
             model: db.Comment,
+            attributes: ['userId', 'comment', 'createdAt'],
+            order: [['createdAt', 'DESC']],
+            include: {
+              model: db.User,
+              attributes: ['userName']
+            }
           }, {
             model: db.Like,
+            attributes: ['userId'],
+            include: {
+              model: db.User,
+              attributes: ['userName']
+            }
           }
         ],
       }
@@ -142,7 +173,7 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
   if (req.user.id !== user.id) { //Checks if user is signed in and can edit their own tweet
     const err = new Error('Unauthorized');
     err.status = 401;
-    err.message = 'You are not authorized to delete this post.';
+    err.message = 'You are not authorized to view these post.';
     err.title = 'Unauthorized';
     throw err
   }
@@ -157,15 +188,27 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
         include: {
           model: db.Post,
           as: 'posts',
+          order: [['createdAt', 'DESC']],
           include: [
             {
               model: db.Comment,
+              attributes: ['userId', 'comment', 'createdAt'],
+              order: [['createdAt', 'DESC']],
+              include: {
+                model: db.User,
+                attributes: ['userName']
+              }
             }, {
               model: db.Like,
+              attributes: ['userId'],
+              include: {
+                model: db.User,
+                attributes: ['userName']
+              }
             }
           ],
         }
-      }
+      },
     })
     res.json({ followerPosts });
   } else {
@@ -200,7 +243,7 @@ router.delete('/posts/:postId(\\d+)/comments/:commentId(\\d+)', requireAuth, asy
     if (req.user.id !== comment.userId && req.user.id !== comment.postId) { //Checks if user is signed in and can edit their own tweet
       const err = new Error('Unauthorized');
       err.status = 401;
-      err.message = 'You are not authorized to delete this post.';
+      err.message = 'You are not authorized to delete this comment.';
       err.title = 'Unauthorized';
       throw err
     }
@@ -211,6 +254,7 @@ router.delete('/posts/:postId(\\d+)/comments/:commentId(\\d+)', requireAuth, asy
   }
 }));
 
+//add a like
 router.post('/posts/:postId(\\d+)/likes', requireAuth, asyncHandler(async (req, res) => {
   const postId = req.params.postId;
   const post = await db.Post.findByPk(postId);
@@ -235,6 +279,7 @@ router.post('/posts/:postId(\\d+)/likes', requireAuth, asyncHandler(async (req, 
   }
 }));
 
+//delete a like
 router.delete('/posts/:postId(\\d+)/likes/:likeId(\\d+)', requireAuth, asyncHandler(async (req, res, next) => {
   const likeId = req.params.likeId;
   const like = await db.Like.findByPk(likeId);
@@ -242,7 +287,7 @@ router.delete('/posts/:postId(\\d+)/likes/:likeId(\\d+)', requireAuth, asyncHand
     if (req.user.id !== like.userId) { //Checks if user is signed in and can edit their own tweet
       const err = new Error('Unauthorized');
       err.status = 401;
-      err.message = 'You are not authorized to delete this post.';
+      err.message = 'You are not authorized to unlike this post.';
       err.title = 'Unauthorized';
       throw err;
     }
