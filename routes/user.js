@@ -208,7 +208,7 @@ router.post(
   "/:id(\\d+)/following/",
   requireAuth,
   asyncHandler(async (req, res) => {
-    if (req.user.id != req.params.id) {
+    if (req.user.id != req.params.id) { //31 = 2
       //KDEV change to req.user.id
 
       const err = new Error("Unauthorized");
@@ -218,8 +218,8 @@ router.post(
       throw err;
     }
     const follow = await db.Follow.create({
-      followerId: req.params.id,
-      followingId: req.body.id,
+      followerId: req.body.id,
+      followingId: req.user.id,
     });
     res.json({ follow });
   })
