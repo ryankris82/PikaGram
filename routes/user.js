@@ -123,11 +123,7 @@ router.put(
 
     if (user) {
       if (req.user.id != user.id) {
-<<<<<<< HEAD
         //KDEV change req.body.user to req.user
-=======
-
->>>>>>> edd7915dae69c81954e858e3594c3f6258d6441e
         const err = new Error("Unauthorized");
         err.status = 401;
         err.message = "You are not authorized to edit this user.";
@@ -159,11 +155,7 @@ router.delete(
 
     if (user) {
       if (req.user.id != user.id) {
-<<<<<<< HEAD
         //KDEV change to req.user.id
-=======
-
->>>>>>> edd7915dae69c81954e858e3594c3f6258d6441e
         const err = new Error("Unauthorized");
         err.status = 401;
         err.message = "You are not authorized to delete this user.";
@@ -238,11 +230,7 @@ router.delete(
   requireAuth,
   asyncHandler(async (req, res) => {
     if (req.user.id != req.params.id) {
-<<<<<<< HEAD
       //KDEV change to req.user.id
-=======
-
->>>>>>> edd7915dae69c81954e858e3594c3f6258d6441e
       const err = new Error("Unauthorized");
       err.status = 401;
       err.message = "You are not authorized to unfollow this user.";
