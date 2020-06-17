@@ -122,8 +122,8 @@ router.put(
     const user = await User.findByPk(req.params.id);
 
     if (user) {
-      if (req.body.user.id != user.id) {
-        //KDEV change req.body.user to req.user
+      if (req.user.id != user.id) {
+        
         const err = new Error("Unauthorized");
         err.status = 401;
         err.message = "You are not authorized to edit this user.";
@@ -154,8 +154,8 @@ router.delete(
     const user = await User.findByPk(req.params.id);
 
     if (user) {
-      if (req.body.user.id != user.id) {
-        //KDEV change to req.user.id
+      if (req.user.id != user.id) {
+        
         const err = new Error("Unauthorized");
         err.status = 401;
         err.message = "You are not authorized to delete this user.";
@@ -208,8 +208,8 @@ router.post(
   "/:id(\\d+)/following/",
   requireAuth,
   asyncHandler(async (req, res) => {
-    if (req.body.user.id != req.params.id) {
-      //KDEV change to req.user.id
+    if (req.user.id != req.params.id) {
+      
       const err = new Error("Unauthorized");
       err.status = 401;
       err.message = "You are not authorized to follow this user.";
@@ -228,8 +228,8 @@ router.delete(
   "/:id(\\d+)/following/:followingId(\\d+)",
   requireAuth,
   asyncHandler(async (req, res) => {
-    if (req.body.user.id != req.params.id) {
-      //KDEV change to req.user.id
+    if (req.user.id != req.params.id) {
+      
       const err = new Error("Unauthorized");
       err.status = 401;
       err.message = "You are not authorized to unfollow this user.";
