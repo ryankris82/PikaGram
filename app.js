@@ -13,7 +13,12 @@ app.use(express.json());
 app.use("/", indexRouter);
 app.use("/api/users", userRouter);
 app.use("/api", postRouter);
-app.use(cors({ origin: "http://localhost:8080" }));
+
+if (process.env.NODE_ENV) {
+  // app.use(cors({ origin: 'app url here' }));
+} else {
+  app.use(cors({ origin: "http://localhost:8877" }));
+}
 
 app.use((req, res, next) => {
   const err = new Error("The requested resource couldn't be found.");

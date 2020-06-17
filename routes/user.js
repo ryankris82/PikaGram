@@ -96,7 +96,7 @@ router.get(
   "/all",
   requireAuth,
   asyncHandler(async (req, res) => {
-    const users = await User.findAll();
+    const users = await User.findAll({ attributes: ['id', 'firstName', 'lastName', 'userName', 'email'] });
     res.json({ users });
   })
 );
@@ -106,7 +106,7 @@ router.get(
   "/:id(\\d+)",
   requireAuth,
   asyncHandler(async (req, res, next) => {
-    const user = await User.findByPk(req.params.id);
+    const user = await User.findByPk(req.params.id, { attributes: ['id', 'firstName', 'lastName', 'userName', 'email', 'bio', 'profilePicPath', 'age', 'gender'] });
     if (user) {
       res.json({ user });
     } else {
@@ -119,7 +119,7 @@ router.put(
   "/:id(\\d+)",
   requireAuth,
   asyncHandler(async (req, res, next) => {
-    const user = await User.findByPk(req.params.id);
+    const user = await User.findByPk(req.params.id, { attributes: ['id', 'firstName', 'lastName', 'userName', 'email', 'bio', 'profilePicPath', 'age', 'gender'] });
 
     if (user) {
       if (req.user.id != user.id) {
@@ -174,10 +174,11 @@ router.get(
   "/:id(\\d+)/followers",
   asyncHandler(async (req, res) => {
     const user = await User.findByPk(req.params.id, {
+      attributes: ['userName'],
       include: {
         model: db.User,
         as: "followers",
-        attributes: ["id", "userName"],
+        attributes: ["id", "firstName", "userName"],
         through: {
           attributes: [],
         },
@@ -191,10 +192,11 @@ router.get(
   "/:id(\\d+)/following",
   asyncHandler(async (req, res) => {
     const user = await User.findByPk(req.params.id, {
+      attributes: ['userName'],
       include: {
         model: db.User,
         as: "following",
-        attributes: ["id", "userName"],
+        attributes: ["id", "firstName", "userName"],
         through: {
           attributes: [],
         },
@@ -218,8 +220,8 @@ router.post(
       throw err;
     }
     const follow = await db.Follow.create({
-      followerId: req.body.id,
-      followingId: req.user.id,
+      followerId: req.user.id,
+      followingId: req.body.id
     });
     res.json({ follow });
   })
@@ -239,13 +241,13 @@ router.delete(
     }
     const follow = await db.Follow.findOne({
       where: {
+        followerId: req.user.id,
         followingId: req.params.followingId,
-        followerId: req.params.id,
       },
     });
     if (follow) {
       follow.destroy();
-      res.json({ following: req.params.followingId });
+      res.json({ follow });
     } else {
       res.json({ err: ["You were not following this person."] });
     }
