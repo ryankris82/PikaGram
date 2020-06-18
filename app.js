@@ -14,7 +14,7 @@ app.use("/", indexRouter);
 app.use("/api/users", userRouter);
 app.use("/api", postRouter);
 
-if (process.env.NODE_ENV) {
+if (process.env.NODE_ENV === 'production') {
   // app.use(cors({ origin: 'app url here' }));
 } else {
   app.use(cors({ origin: "http://localhost:8877" }));
