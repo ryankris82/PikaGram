@@ -5,6 +5,7 @@ const { ValidationError } = require("sequelize");
 const indexRouter = require("./routes/index");
 const userRouter = require("./routes/user");
 const postRouter = require("./routes/post");
+const photoRouter = require('./routes/photo-upload');
 const { environment } = require("./config");
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use("/", indexRouter);
 app.use("/api/users", userRouter);
 app.use("/api", postRouter);
+app.use('/api/photos', photoRouter);
 
 if (process.env.NODE_ENV === 'production') {
   // app.use(cors({ origin: 'app url here' }));
