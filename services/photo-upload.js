@@ -11,15 +11,25 @@ aws.config.update({
 
 const s3 = new aws.S3();
 
+const fileFilter = (req, file, cb) => {
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true)
+  } else {
+    cb(new Error('Invalide Mime Type, only JPEG and PNG'), false);
+  }
+}
+
 const upload = multer({
+  fileFilter: fileFilter,
   storage: multerS3({
     s3: s3,
     bucket: "pikagram-pics",
+    acl: 'public-read',
     metadata: function (req, file, cb) {
       cb(null, { fieldName: file.fieldname });
     },
     key: function (req, file, cb) {
-      cb(null, Date.now().toString());
+      cb(null, `${req.user.Id}-${Date.now()}`);
     },
   }),
 });

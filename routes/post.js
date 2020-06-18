@@ -4,6 +4,9 @@ const { check } = require('express-validator');
 const { asyncHandler, handleValidationErrors } = require('../utils');
 const db = require('../db/models');
 const { requireAuth } = require('../auth');
+const upload = require('../services/photo-upload');
+
+const singleImageUpload = upload.single('image');
 
 const router = express.Router();
 
@@ -75,17 +78,16 @@ router.post('/posts', handleValidationErrors, [
   check('photoPath')
     .exists({ checkFalsey: true })
     .withMessage('Please provide a picture')
-], requireAuth, asyncHandler(async (req, res) => {
+], requireAuth, singleImageUpload, asyncHandler(async (req, res) => {
   const {
-    caption,
-    photoPath
+    caption
   } = req.body;
   console.log(req.body);
 
   const post = await db.Post.create({
     userId: req.user.id, // replace with req.user.id so it's based on who is logged in
     caption,
-    photoPath
+    photoPath: req.file.location
   });
 
   res.json({ post });

@@ -3,6 +3,9 @@ const bcrypt = require("bcryptjs");
 const { check } = require("express-validator");
 const { asyncHandler, handleValidationErrors } = require("../utils");
 const { getUserToken, requireAuth } = require("../auth");
+const upload = require('../services/photo-upload');
+
+const singleImageUpload = upload.single('image');
 
 const router = express.Router();
 const db = require("../db/models");
@@ -136,7 +139,6 @@ router.put(
         userName: req.body.userName,
         email: req.body.email,
         bio: req.body.bio,
-        profilePicPath: req.body.profilePicPath,
         age: req.body.age,
         gender: req.body.gender,
       });
@@ -146,6 +148,27 @@ router.put(
     }
   })
 );
+
+//edits profile pic
+router.put("/:id(\\d+)/profile-pic", requireAuth, singleImageUpload, asyncHandler(async (req, res, next) => {
+  if (req.user.id != user.id) {
+    //KDEV change to req.user.id
+    const err = new Error("Unauthorized");
+    err.status = 401;
+    err.message = "You are not authorized to update this profile.";
+    err.title = "Unauthorized";
+    throw err;
+  }
+  const user = await db.User.findByPk(req.params.id);
+  if (user) {
+    await user.update({
+      profilePicPath: req.file.location
+    });
+    res.json({ user })
+  } else {
+    next(userNotFoundError(req.params.id));
+  }
+}))
 
 router.delete(
   "/:id(\\d+)",
