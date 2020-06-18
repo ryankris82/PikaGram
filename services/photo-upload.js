@@ -29,7 +29,7 @@ const upload = multer({
       cb(null, { fieldName: file.fieldname });
     },
     key: function (req, file, cb) {
-      cb(null, `${req.user.Id}-${Date.now()}`);
+      cb(null, `${req.user.id}-${Date.now()}`);
     },
   }),
 });
