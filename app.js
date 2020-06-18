@@ -5,22 +5,20 @@ const { ValidationError } = require("sequelize");
 const indexRouter = require("./routes/index");
 const userRouter = require("./routes/user");
 const postRouter = require("./routes/post");
-const photoRouter = require('./routes/photo-upload');
 const { environment } = require("./config");
 const app = express();
-
-app.use(morgan("dev"));
-app.use(express.json());
-app.use("/", indexRouter);
-app.use("/api/users", userRouter);
-app.use("/api", postRouter);
-app.use('/api/photos', photoRouter);
 
 if (process.env.NODE_ENV === 'production') {
   // app.use(cors({ origin: 'app url here' }));
 } else {
   app.use(cors({ origin: "http://localhost:8877" }));
 }
+app.use(morgan("dev"));
+app.use(express.json());
+app.use("/", indexRouter);
+app.use("/api/users", userRouter);
+app.use("/api", postRouter);
+
 
 app.use((req, res, next) => {
   const err = new Error("The requested resource couldn't be found.");

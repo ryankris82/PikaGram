@@ -172,7 +172,7 @@ router.get('/posts/user/:userId(\\d+)', asyncHandler(async (req, res, next) => {
 router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (req, res, next) => {
   const userId = req.params.userId;
   const user = await db.User.findByPk(userId);
-  if (req.user.id !== user.id) { //Checks if user is signed in and can edit their own tweet
+  if (req.user.id !== user.dataValues.id) { //Checks if user is signed in and can edit their own tweet
     const err = new Error('Unauthorized');
     err.status = 401;
     err.message = 'You are not authorized to view these post.';
