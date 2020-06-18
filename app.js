@@ -9,7 +9,7 @@ const { environment } = require("./config");
 const app = express();
 
 if (process.env.NODE_ENV === 'production') {
-  // app.use(cors({ origin: 'app url here' }));
+  app.use(cors({ origin: "http://localhost:8877" }));
 } else {
   app.use(cors({ origin: "http://localhost:8877" }));
 }
