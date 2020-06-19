@@ -10,7 +10,6 @@ const singleImageUpload = upload.single('image');
 
 const router = express.Router();
 const db = require("../db/models");
-const follow = require("../db/models/follow");
 
 const { User } = db;
 
@@ -83,7 +82,7 @@ router.post(
       },
     });
 
-    console.log(user);
+    
 
     if (!user || !user.validatePassword(password)) {
       const err = new Error("Login failed");
