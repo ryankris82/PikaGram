@@ -66,7 +66,15 @@ router.post(
 //create user token
 router.post(
   "/token",
-  validateEmailAndPassword,
+  [
+    check("email")
+      .exists({ checkFalsy: true })
+      .withMessage("Please provide a valid username or email."),
+    check("password")
+      .exists({ checkFalsy: true })
+      .withMessage("Please provide a password."),
+    handleValidationErrors,
+  ],
   asyncHandler(async (req, res, next) => {
     const { email, password } = req.body;
     const user = await User.findOne({
