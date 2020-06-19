@@ -63,7 +63,8 @@ router.post(
     });
   })
 );
-//create user token
+
+//create user token on login
 router.post(
   "/token",
   [
@@ -129,6 +130,7 @@ router.get(
   })
 );
 
+//edit profile
 router.put(
   "/:id(\\d+)",
   requireAuth,
@@ -181,6 +183,7 @@ router.put("/:id(\\d+)/profile-pic", requireAuth, singleImageUpload, asyncHandle
   }
 }))
 
+//delete a user
 router.delete(
   "/:id(\\d+)",
   requireAuth,
@@ -204,6 +207,7 @@ router.delete(
   })
 );
 
+//get all followers for a user
 router.get(
   "/:id(\\d+)/followers",
   asyncHandler(async (req, res) => {
@@ -222,6 +226,8 @@ router.get(
   })
 );
 
+
+//get all the people user is following
 router.get(
   "/:id(\\d+)/following",
   asyncHandler(async (req, res) => {
@@ -240,6 +246,7 @@ router.get(
   })
 );
 
+//follow someone
 router.post(
   "/:id(\\d+)/following/",
   requireAuth,
@@ -261,6 +268,7 @@ router.post(
   })
 );
 
+//unfollow someone
 router.delete(
   "/:id(\\d+)/following/:followingId(\\d+)",
   requireAuth,
