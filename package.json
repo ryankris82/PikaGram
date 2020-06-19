@@ -6,7 +6,8 @@
   "scripts": {
     "start": "per-env",
     "start:development": "nodemon -r dotenv/config ./bin/www",
-    "start:production": "node ./bin/www"
+    "start:production": "node ./bin/www",
+    "test": "mocha"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +21,6 @@
     "express-validator": "^6.5.0",
     "faker": "^4.1.0",
     "jsonwebtoken": "^8.5.1",
-    "mocha": "^8.0.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.2",
     "multer-s3": "^2.9.0",
@@ -28,13 +28,14 @@
     "pg": "^8.2.1",
     "pokedex": "^1.1.0",
     "pokedex-api": "^1.1.2",
-    "sequelize": "^5.21.13",
-    "supertest": "^4.0.2"
+    "sequelize": "^5.21.13"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
     "dotenv-cli": "^3.1.0",
+    "mocha": "^8.0.1",
     "nodemon": "^2.0.4",
-    "sequelize-cli": "^5.5.1"
+    "sequelize-cli": "^5.5.1",
+    "supertest": "^4.0.2"
   }
 }
