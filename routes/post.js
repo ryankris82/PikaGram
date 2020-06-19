@@ -212,7 +212,11 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
         }
       },
     })
-    res.json({ followerPosts });
+
+    const followingPosts = followerPosts.dataValues.following.flatMap((following) => following.posts)
+    const sortedPosts = followingPosts.sort((a, b) => b.createdAt - a.createdAt)
+
+    res.json({ sortedPosts });
   } else {
     next(userNotFound(userId));
   }
