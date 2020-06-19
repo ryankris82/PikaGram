@@ -43,7 +43,20 @@ module.exports = {
         updatedAt: new Date(),
       }
     });
-
+data.push({
+  firstName: "Demo",
+  lastName: "User",
+  userName: "demouser",
+  email: "demo@gmail.com",
+  hashedPassword: bcrypt.hashSync("password", 10),
+  profilePicPath: "https://i.imgur.com/PyMOoJn.jpg",
+  bio:
+    "I am slowly learning to love my life after a bitter divorce. It may be a slow moving journey, but I'll get there one day.",
+  age: 37,
+  gender: "female",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+});
     return queryInterface.bulkInsert('Users', data, { returning: true });
   },
 
