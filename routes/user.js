@@ -4,6 +4,7 @@ const { check } = require("express-validator");
 const { asyncHandler, handleValidationErrors } = require("../utils");
 const { getUserToken, requireAuth } = require("../auth");
 const upload = require('../services/photo-upload');
+const { Op } = require('sequelize');
 
 const singleImageUpload = upload.single('image');
 
@@ -73,6 +74,8 @@ router.post(
         [Op.or]: [{ email: email }, { userName: email }]
       },
     });
+
+    console.log(user);
 
     if (!user || !user.validatePassword(password)) {
       const err = new Error("Login failed");
