@@ -48,19 +48,25 @@ router.get('/posts/:postId(\\d+)', asyncHandler(async (req, res, next) => {
   const post = await db.Post.findByPk(postId, {
     include: [
       {
+        model: db.User,
+        as: 'user',
+        attributes: ['userName', 'profilePicPath']
+
+      },
+      {
         model: db.Comment,
         attributes: ['userId', 'comment', 'createdAt'],
         order: [['createdAt', 'DESC']],
         include: {
           model: db.User,
-          attributes: ['userName']
+          attributes: ['userName', 'profilePicPath']
         }
       }, {
         model: db.Like,
         attributes: ['userId'],
         include: {
           model: db.User,
-          attributes: ['userName']
+          attributes: ['userName', 'profilePicPath']
         }
       }
     ]
@@ -137,7 +143,7 @@ router.get('/posts/user/:userId(\\d+)', asyncHandler(async (req, res, next) => {
   const user = await db.User.findByPk(userId);
   if (user) {
     const userPosts = await db.User.findByPk(userId, {
-      attributes: ['id', 'userName'],
+      attributes: ['id', 'userName', 'profilePicPath'],
       include: {
         model: db.Post,
         as: 'posts',
@@ -149,14 +155,14 @@ router.get('/posts/user/:userId(\\d+)', asyncHandler(async (req, res, next) => {
             order: [['createdAt', 'DESC']],
             include: {
               model: db.User,
-              attributes: ['userName']
+              attributes: ['userName', 'profilePicPath']
             }
           }, {
             model: db.Like,
             attributes: ['userId'],
             include: {
               model: db.User,
-              attributes: ['userName']
+              attributes: ['userName', 'profilePicPath']
             }
           }
         ],
@@ -196,7 +202,7 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
               {
                 model: db.User,
                 as: 'user',
-                attributes: ['userName']
+                attributes: ['userName', 'profilePicPath']
               },
               {
                 model: db.Comment,
@@ -204,14 +210,14 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
                 order: [['createdAt', 'DESC']],
                 include: {
                   model: db.User,
-                  attributes: ['userName']
+                  attributes: ['userName', 'profilePicPath']
                 }
               }, {
                 model: db.Like,
                 attributes: ['userId'],
                 include: {
                   model: db.User,
-                  attributes: ['userName']
+                  attributes: ['userName', 'profilePicPath']
                 }
               }
             ],
@@ -224,7 +230,7 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
             {
               model: db.User,
               as: 'user',
-              attributes: ['userName']
+              attributes: ['userName', 'profilePicPath']
             },
             {
               model: db.Comment,
@@ -232,14 +238,14 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
               order: [['createdAt', 'DESC']],
               include: {
                 model: db.User,
-                attributes: ['userName']
+                attributes: ['userName', 'profilePicPath']
               }
             }, {
               model: db.Like,
               attributes: ['userId'],
               include: {
                 model: db.User,
-                attributes: ['userName']
+                attributes: ['userName', 'profilePicPath']
               }
             }
           ],
