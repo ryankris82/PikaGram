@@ -193,6 +193,11 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
           order: [['createdAt', 'DESC']],
           include: [
             {
+              model: db.User,
+              as: 'user',
+              attributes: ['userName']
+            },
+            {
               model: db.Comment,
               attributes: ['userId', 'comment', 'createdAt'],
               order: [['createdAt', 'DESC']],
