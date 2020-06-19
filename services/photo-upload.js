@@ -15,7 +15,7 @@ const fileFilter = (req, file, cb) => {
   if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
     cb(null, true)
   } else {
-    cb(new Error('Invalide Mime Type, only JPEG and PNG'), false);
+    cb(new Error('Invalid Mime Type, only JPEG and PNG'), false);
   }
 }
 

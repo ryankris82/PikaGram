@@ -119,7 +119,7 @@ module.exports = {
         },
         {
           userId: 31,
-          caption: "y workmate Bob. Good guy...bit of a grump at times.",
+          caption: "My workmate Bob. Good guy...bit of a grump at times.",
           photoPath: "https://i.imgur.com/Ozw5YdB.png",
           createdAt: new Date(),
           updatedAt: new Date(),
