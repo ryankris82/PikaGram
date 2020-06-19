@@ -182,16 +182,50 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
   if (user) {
     const followerPosts = await db.User.findByPk(userId, {
       attributes: ['id', 'userName'],
-      include: {
-        model: db.User,
-        as: 'following',
-        attributes: ['id', 'userName'],
-        through: { attributes: [] },
-        include: {
+      include: [
+        {
+          model: db.User,
+          as: 'following',
+          attributes: ['id', 'userName'],
+          through: { attributes: [] },
+          include: {
+            model: db.Post,
+            as: 'posts',
+            order: [['createdAt', 'DESC']],
+            include: [
+              {
+                model: db.User,
+                as: 'user',
+                attributes: ['userName']
+              },
+              {
+                model: db.Comment,
+                attributes: ['userId', 'comment', 'createdAt'],
+                order: [['createdAt', 'DESC']],
+                include: {
+                  model: db.User,
+                  attributes: ['userName']
+                }
+              }, {
+                model: db.Like,
+                attributes: ['userId'],
+                include: {
+                  model: db.User,
+                  attributes: ['userName']
+                }
+              }
+            ],
+          }
+        },
+        {
           model: db.Post,
           as: 'posts',
-          order: [['createdAt', 'DESC']],
           include: [
+            {
+              model: db.User,
+              as: 'user',
+              attributes: ['userName']
+            },
             {
               model: db.Comment,
               attributes: ['userId', 'comment', 'createdAt'],
@@ -210,9 +244,15 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
             }
           ],
         }
-      },
+      ],
     })
-    res.json({ followerPosts });
+
+    const followingPosts = followerPosts.dataValues.following.flatMap((following) => following.posts)
+    const userPosts = followerPosts.dataValues.posts;
+    followingPosts.push(...userPosts)
+    const sortedPosts = followingPosts.sort((a, b) => b.createdAt - a.createdAt)
+
+    res.json({ sortedPosts });
   } else {
     next(userNotFound(userId));
   }
