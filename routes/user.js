@@ -83,7 +83,7 @@ router.post(
       },
     });
 
-    
+
 
     if (!user || !user.validatePassword(password)) {
       const err = new Error("Login failed");
@@ -104,6 +104,13 @@ const userNotFoundError = (id) => {
   err.status = 404;
   return err;
 };
+
+const userIsFound = (type) => {
+  const err = Error('User found')
+  err.errors = [`The following ${type} has already been taken.`];
+  err.title = "User found";
+  return err;
+}
 
 //get list of all users
 router.get(
@@ -294,5 +301,31 @@ router.delete(
     }
   })
 );
+
+router.post('/check/:type', asyncHandler(async (req, res, next) => {
+  const type = req.params.type;
+  let user;
+
+  if (type === 'email') {
+    user = await db.User.findOne({
+      where: {
+        email: req.body.value
+      }
+    })
+
+  } else if (type === 'username') {
+    user = await db.User.findOne({
+      where: {
+        userName: req.body.value
+      }
+    })
+  }
+  if (user) {
+    next(userIsFound(type));
+    // res.json({ user })
+  } else {
+    res.json({ message: true })
+  }
+}));
 
 module.exports = router;
