@@ -160,7 +160,7 @@ router.get('/posts/user/:userId(\\d+)', asyncHandler(async (req, res, next) => {
             }
           }, {
             model: db.Like,
-            attributes: ['userId', 'profilePicPath'],
+            attributes: ['userId'],
             include: {
               model: db.User,
               attributes: ['userName', 'profilePicPath']
@@ -215,7 +215,7 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
                 }
               }, {
                 model: db.Like,
-                attributes: ['userId', 'profilePicPath'],
+                attributes: ['userId'],
                 include: {
                   model: db.User,
                   attributes: ['userName', 'profilePicPath']
@@ -243,7 +243,7 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
               }
             }, {
               model: db.Like,
-              attributes: ['userId', 'profilePicPath'],
+              attributes: ['userId'],
               include: {
                 model: db.User,
                 attributes: ['userName', 'profilePicPath']
