@@ -5,6 +5,7 @@ const { asyncHandler, handleValidationErrors } = require('../utils');
 const db = require('../db/models');
 const { requireAuth } = require('../auth');
 const upload = require('../services/photo-upload');
+const { Op } = require('sequelize');
 
 const singleImageUpload = upload.single('image');
 
@@ -55,7 +56,7 @@ router.get('/posts/:postId(\\d+)', asyncHandler(async (req, res, next) => {
       },
       {
         model: db.Comment,
-        attributes: ['userId', 'comment', 'createdAt'],
+        attributes: ['id', 'userId', 'comment', 'createdAt'],
         order: [['createdAt', 'DESC']],
         include: {
           model: db.User,
@@ -151,7 +152,7 @@ router.get('/posts/user/:userId(\\d+)', asyncHandler(async (req, res, next) => {
         include: [
           {
             model: db.Comment,
-            attributes: ['userId', 'comment', 'createdAt'],
+            attributes: ['id', 'userId', 'comment', 'createdAt'],
             order: [['createdAt', 'DESC']],
             include: {
               model: db.User,
@@ -159,7 +160,7 @@ router.get('/posts/user/:userId(\\d+)', asyncHandler(async (req, res, next) => {
             }
           }, {
             model: db.Like,
-            attributes: ['userId'],
+            attributes: ['userId', 'profilePicPath'],
             include: {
               model: db.User,
               attributes: ['userName', 'profilePicPath']
@@ -206,7 +207,7 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
               },
               {
                 model: db.Comment,
-                attributes: ['userId', 'comment', 'createdAt'],
+                attributes: ['id', 'userId', 'comment', 'createdAt'],
                 order: [['createdAt', 'DESC']],
                 include: {
                   model: db.User,
@@ -214,7 +215,7 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
                 }
               }, {
                 model: db.Like,
-                attributes: ['userId'],
+                attributes: ['userId', 'profilePicPath'],
                 include: {
                   model: db.User,
                   attributes: ['userName', 'profilePicPath']
@@ -234,7 +235,7 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
             },
             {
               model: db.Comment,
-              attributes: ['userId', 'comment', 'createdAt'],
+              attributes: ['id', 'userId', 'comment', 'createdAt'],
               order: [['createdAt', 'DESC']],
               include: {
                 model: db.User,
@@ -242,7 +243,7 @@ router.get('/posts/following/:userId(\\d+)', requireAuth, asyncHandler(async (re
               }
             }, {
               model: db.Like,
-              attributes: ['userId'],
+              attributes: ['userId', 'profilePicPath'],
               include: {
                 model: db.User,
                 attributes: ['userName', 'profilePicPath']
@@ -328,9 +329,14 @@ router.post('/posts/:postId(\\d+)/likes', requireAuth, asyncHandler(async (req, 
 }));
 
 //delete a like
-router.delete('/posts/:postId(\\d+)/likes/:likeId(\\d+)', requireAuth, asyncHandler(async (req, res, next) => {
-  const likeId = req.params.likeId;
-  const like = await db.Like.findByPk(likeId);
+router.delete('/posts/:postId(\\d+)/likes', requireAuth, asyncHandler(async (req, res, next) => {
+  const postId = req.params.postId;
+  const like = await db.Like.findOne({
+    where: {
+      userId: req.user.id,
+      postId
+    }
+  });
   if (like) {
     if (req.user.id !== like.userId) { //Checks if user is signed in and can edit their own tweet
       const err = new Error('Unauthorized');

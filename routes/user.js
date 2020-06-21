@@ -322,7 +322,6 @@ router.post('/check/:type', asyncHandler(async (req, res, next) => {
   }
   if (user) {
     next(userIsFound(type));
-    // res.json({ user })
   } else {
     res.json({ message: true })
   }
