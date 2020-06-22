@@ -9,11 +9,11 @@ const { environment } = require("./config");
 const app = express();
 
 if (process.env.NODE_ENV === 'production') {
-  app.use(cors({ origin: "https://cryptic-meadow-61382.herokuapp.com/" }));
-  app.use(cors({ origin: "http://localhost:8877" }));
+  // app.use(cors({ origin: "https://cryptic-meadow-61382.herokuapp.com/" }));
+  app.use(cors({ origin: "*" }));
 } else {
-  app.use(cors({ origin: "https://cryptic-meadow-61382.herokuapp.com/" }));
-  app.use(cors({ origin: "http://localhost:8877" }));
+  // app.use(cors({ origin: "https://cryptic-meadow-61382.herokuapp.com/" }));
+  app.use(cors({ origin: "*" }));
 }
 app.use(morgan("dev"));
 app.use(express.json());
