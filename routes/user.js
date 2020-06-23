@@ -169,8 +169,11 @@ router.put(
 );
 
 //edits profile pic
-router.put("/:id(\\d+)/profile-pic", requireAuth, singleImageUpload, asyncHandler(async (req, res, next) => {
+router.put("/:id(\\d+)/profile-pic", requireAuth, asyncHandler(async (req, res, next) => {
   const user = await db.User.findByPk(req.params.id);
+  const {
+    profilePicPath
+  } = req.body;
   if (req.user.id != user.id) {
     //KDEV change to req.user.id
     const err = new Error("Unauthorized");
@@ -181,7 +184,7 @@ router.put("/:id(\\d+)/profile-pic", requireAuth, singleImageUpload, asyncHandle
   }
   if (user) {
     await user.update({
-      profilePicPath: req.file.location
+      profilePicPath
     });
     res.json({ user })
   } else {

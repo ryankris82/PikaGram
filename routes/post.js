@@ -85,16 +85,17 @@ router.post('/posts', handleValidationErrors, [
   check('photoPath')
     .exists({ checkFalsey: true })
     .withMessage('Please provide a picture')
-], requireAuth, singleImageUpload, asyncHandler(async (req, res) => {
+], requireAuth, asyncHandler(async (req, res) => {
   const {
-    caption
+    caption,
+    photoPath
   } = req.body;
   console.log(req.body);
 
   const post = await db.Post.create({
     userId: req.user.id, // replace with req.user.id so it's based on who is logged in
     caption,
-    photoPath: req.file.location
+    photoPath
   });
 
   res.json({ post });
